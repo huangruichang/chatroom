@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>huangruichang's chatroom</title>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="common.css"/>
+</head>
+<body>
+<div class="login-modal-dimmer">
+    <div class="login-modal">
+        <div class="title">
+            Pick a name:
+        </div>
+        <input type="text" name="user-name"/>
+        <ul class="tips" style="color:#fff;margin-top:5px;text-align:left;display: inline-block;">
+            <li>
+                <span style="color:green">Green</span> ------ user focus on chatroom
+            </li>
+            <li>
+                <span style="color:orange">Yellow</span> ------ user does not focus on chatroom
+            </li>
+            <li>
+                <span style="color: #999">Gray Name</span> ------ yourself
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="chatroom">
+    <div class="header">
+        <span>
+            <i class="fa fa-weixin" style="margin-right: 10px;"></i>
+            welcome to huang's chatroom.
+        </span>
+        <span id="header-username"
+              class="ellipsis"
+              style="text-decoration: underline;
+                     max-width: 200px;
+                     display: inline-block;
+                     vertical-align: top;"></span>
+    </div>
+    <div class="left column">
+        <ul class="user-list"></ul>
+    </div>
+    <div class="right column">
+        <div class="message-panel"></div>
+        <div class="message-sending-input-wrapper">
+            <input class="message-sending-input" type="text" placeholder="send something..." />
+        </div>
+    </div>
+</div>
+</body>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/socket.io-client/socket.io.js"></script>
+<script src="main.js"></script>
+</html>

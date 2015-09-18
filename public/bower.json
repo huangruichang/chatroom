@@ -1,0 +1,11 @@
+{
+  "name": "chatroom",
+  "version": "0.0.0",
+  "description": "a chatroom",
+  "author": "huangruichang",
+  "dependencies": {
+    "font-awesome": "4.4.0",
+    "jquery": "2.1.1",
+    "socket.io-client": "1.3.0"
+  }
+}

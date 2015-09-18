@@ -1,0 +1,10 @@
+{
+  "name": "chatroom",
+  "version": "0.0.0",
+  "description": "a chatroom",
+  "author": "huangruichang",
+  "dependencies": {
+    "express": "4.13.3",
+    "socket.io": "1.3.0"
+  }
+}

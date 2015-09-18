@@ -1,0 +1,144 @@
+
+
+.header {
+    height: 50px;
+    border: 1px solid #ddd;
+    box-shadow: 1px 1px 5px #999;
+    line-height: 50px;
+    text-align: center;
+    background-color: #0099CC;
+    color: #fff;
+}
+
+.left.column {
+    width: 180px;
+    position: absolute;
+}
+
+.right.column {
+    margin-left:180px;
+}
+
+
+/*user-list*/
+.user-list {
+    padding: 10px;
+    font-size: 16px;
+    min-height:500px;
+    max-height:700px;
+    overflow: auto;
+}
+
+.user-list .user-item:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.user-list .user-item i.fa-user {
+    margin-right: 5px;
+    color: #999;
+}
+
+.user-list .user-item.user-focus i.fa-user:after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: green;
+    margin-left: -16px;
+    margin-bottom: -5px;
+    border-radius: 10px;
+}
+
+.user-list .user-item.user-not-focus i.fa-user:after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: orange;
+    margin-left: -16px;
+    margin-bottom: -5px;
+    border-radius: 10px;
+}
+
+.user-list .user-item .user-name.ellipsis {
+    max-width: 100px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.user-list .user-item.current-user .user-name {
+    color: #999;
+}
+/*user-list-end*/
+
+
+/*message-panel*/
+.message-panel {
+    height: 500px;
+    padding:10px;
+    border-left: 1px solid #999;
+    overflow-y: scroll;
+}
+
+.message-panel .message-item.tip {
+    text-align: center;
+    color: #d3d3d3;
+}
+
+.message-panel .message-item.tip .user-name {
+    max-width: 200px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.message-panel .message-item:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.message-panel .message-item .message-content {
+    word-wrap: break-word;
+}
+/*message-panel-end*/
+
+/*message-sending-input*/
+.message-sending-input-wrapper {
+    border-top: 1px solid #999;
+    padding: 10px;
+}
+
+.message-sending-input-wrapper .message-sending-input {
+    width: 100%;
+    border: none;
+    outline: none;
+}
+/*message-sending-input-end*/
+
+/*login-modal*/
+.login-modal-dimmer {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+}
+
+.login-modal-dimmer .login-modal {
+    display: inline-block;
+    height: 120px;
+    width: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -60px;
+    margin-left: -200px;
+    text-align: center;
+}
+
+.login-modal-dimmer .login-modal .title {
+    color: #fff;
+}
+/*login-modal-end*/
+
+/*init*/
+.chatroom {
+    display: none;
+}

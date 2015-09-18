@@ -1,0 +1,16 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body , input, textarea {
+    background: #fff;
+    font-family: '微软雅黑','Helvetica Neue',sans-serif,SimHei;
+}
+
+.ellipsis {
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
