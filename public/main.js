@@ -10,9 +10,11 @@ $(function () {
 
     var username;
     var userList;
+    var lastMessage;
     var $currentInput = $messageSendingInput.focus();
 
     var scrolling = false;
+    var connected = false;
 
     var socket = io();
 
@@ -39,10 +41,10 @@ $(function () {
 
         if (message && username) {
             $messageSendingInput.val('');
-            addMessage({
+            /*addMessage({
                 username: username,
                 content: message
-            });
+            });*/
             socket.emit('message.new', message);
         }
     };
@@ -52,6 +54,8 @@ $(function () {
     };
 
     var addMessage = function (message) {
+        // mark last message
+        lastMessage = message;
         var $message = buildMessageItem(message);
         $messagePanel.append($message);
         if (!scrolling) {
@@ -91,6 +95,18 @@ $(function () {
                         ].join('');
         var $dom = $(html_str);
         $dom.find('.user-name').text(username);
+        return $dom;
+    };
+
+    var buildReconnectingMessage = function () {
+        var html_str = '<div class="message-item tip reconnecting">you have <span class="warning">disconnected</span>, reconnecting now...</div>';
+        var $dom = $(html_str);
+        return $dom;
+    };
+
+    var buildReconnectSuccessMessage = function () {
+        var html_str = '<div class="message-item tip reconnecting"><span class="succeed">reconnect succeed!</span></div>';
+        var $dom = $(html_str);
         return $dom;
     };
 
@@ -163,58 +179,124 @@ $(function () {
         }
     };
 
-    socket.on('message.new', function (data) {
-        addMessage({
-            username: data.username,
-            content: data.content
+    var socketInit = function (socket) {
+        if (!socket) return;
+        socket.on('message.new', function (data) {
+            addMessage({
+                username: data.username,
+                content: data.content,
+                index: data.index
+            });
         });
-    });
 
-    socket.on('user.list.status', function (data) {
-        userList = data.userList;
-        refreshUserList(data.userList);
-    });
+        socket.on('message.list', function (data) {
+            console.log(data);
+            if (data && data.list) {
+                var list = data.list;
+                if (list.length > 0) {
+                    list.forEach(function (message) {
+                        var $message = buildMessageItem(message);
+                        $messagePanel.append($message);
+                    });
 
-    socket.on('user.name.valid', function (data) {
-        if (!data.is_valided) {
-            if (data.msg) alert(data.msg);
-        } else {
-            setUser();
-        }
-    });
-
-    socket.on('user.left', function (data) {
-        if (username) {
-            userList = removeItem(userList, {username: data.username}, 'username');
-            refreshUserList(userList);
-            var $leftMessage = buildLeftMessage(data.username);
-            $messagePanel.append($leftMessage);
-        }
-    });
-
-    socket.on('user.add', function (data) {
-        if (userList) {
-            userList.push(data.user);
-            refreshUserList(userList);
-        }
-        if (username) {
-            var $joinInMessage = buildJoinInMessage(data.user.username, data.users_num);
-            $messagePanel.append($joinInMessage);
-        }
-    });
-
-    socket.on('user.isFocus', function (data) {
-        var $userItem = $('.user-item[data-id="' + data.username + '"]');
-        if (username) {
-            if (data.isFocus) {
-                markFocus($userItem);
-            } else {
-                markNotFocus($userItem);
+                    lastMessage = list[list.length - 1];
+                }
             }
-        }
-    });
+        });
+
+        socket.on('user.list.status', function (data) {
+            userList = data.userList;
+            refreshUserList(data.userList);
+        });
+
+        socket.on('user.name.valid', function (data) {
+            if (!data.is_valided) {
+                if (data.msg) alert(data.msg);
+            } else {
+                setUser();
+            }
+        });
+
+        socket.on('user.left', function (data) {
+            if (username) {
+                userList = removeItem(userList, {username: data.username}, 'username');
+                refreshUserList(userList);
+                var $leftMessage = buildLeftMessage(data.username);
+                $messagePanel.append($leftMessage);
+            }
+        });
+
+        socket.on('user.add', function (data) {
+            if (userList) {
+                if(checkDuplicate(userList, data.user, 'username')) {
+                    return;
+                }
+                userList.push(data.user);
+                refreshUserList(userList);
+            }
+            if (username) {
+                var $joinInMessage = buildJoinInMessage(data.user.username, data.users_num);
+                $messagePanel.append($joinInMessage);
+            }
+        });
+
+        socket.on('user.isFocus', function (data) {
+            var $userItem = $('.user-item[data-id="' + data.username + '"]');
+            if (username) {
+                if (data.isFocus) {
+                    markFocus($userItem);
+                } else {
+                    markNotFocus($userItem);
+                }
+            }
+        });
+
+        socket.on('reconnect', function () {
+            connected = true;
+            if (!username) {
+                return;
+            }
+            // fetch userList
+            // fetch messageList
+            // reset username
+            socket.emit('user.list.status');
+            setTimeout(function () {
+                console.log('message.list');
+                socket.emit('message.list', lastMessage);
+            }, 2000);
+            socket.emit('user.reconnected', {
+                username: username
+            });
+            var $success = buildReconnectSuccessMessage();
+            $messagePanel.append($success);
+        });
+
+        socket.on('reconnecting', function () {
+            if (!connected) {
+                return;
+            }
+            connected = false;
+            // reconnecting tip
+            if (!username) {
+                return;
+            }
+            var $reconnectingMessage = buildReconnectingMessage();
+            $messagePanel.append($reconnectingMessage);
+        });
+
+        socket.on('connecting', function () {
+            connected = false;
+        });
+
+        socket.on('connect', function () {
+            connected = true;
+        });
+    };
+
+    socketInit(socket);
 
     $window.keydown(function (event) {
+        if (!connected) return;
         if (!(event.ctrlKey || event.metaKey || event.altKey)) {
             if (username) {
                 $currentInput.focus();
@@ -233,7 +315,7 @@ $(function () {
     });
 
     $window.on('focus', function () {
-        if (!username) return;
+        if (!username || !connected) return;
         socket.emit('user.isFocus', {
             username: username,
             isFocus: true
@@ -241,10 +323,19 @@ $(function () {
     });
 
     $window.on('blur', function () {
-        if (!username) return;
+        if (!username || !connected) return;
         socket.emit('user.isFocus', {
             username: username,
             isFocus: false
         });
     });
+
+    var checkDuplicate = function (list, item, key) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i][key] === item[key]) {
+                return true;
+            }
+        }
+        return false;
+    };
 });

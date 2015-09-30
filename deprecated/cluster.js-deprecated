@@ -1,0 +1,41 @@
+var cluster = require('cluster');
+var cups = require('os').cpus();
+var common = require('./common');
+
+cluster.setupMaster({
+    exec: "index.js"
+});
+
+var cpus = require('os').cpus();
+for (var i = 0; i < cpus.length; i++) {
+    cluster.fork();
+}
+
+// auto refork
+cluster.on('exit', function (workder, code, signal) {
+    console.log('workder ' + workder.process.pid + ' died');
+    var count = common.countKey(cluster.workers);
+    if (count < cpus.length) {
+        console.log('forking new...');
+        cluster.fork();
+    }
+});
+
+// master process receive worker process's message
+// so that master process can brocadcast to other worker processes.
+cluster.on('online', function (worker) {
+    var _process = worker.process;
+    var pid = _process.pid;
+    _process.on('message', function (message) {
+        // broadcast
+        var workers = cluster.workers;
+        for (var i in workers) {
+            workers[i].process.send({
+                message: message,
+                pid: pid
+            });
+        }
+    });
+    console.log('process %d activate!', pid);
+});
+

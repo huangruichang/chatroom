@@ -3,3 +3,5 @@ bower_components/
 .idea/
 
 public/bower_components/
+
+config.json

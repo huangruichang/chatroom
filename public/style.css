@@ -98,6 +98,13 @@
 .message-panel .message-item .message-content {
     word-wrap: break-word;
 }
+.message-panel .message-item.tip.reconnecting .warning {
+    color: red;
+}
+
+.message-panel .message-item.tip.reconnecting .succeed {
+    color: green;
+}
 /*message-panel-end*/
 
 /*message-sending-input*/
